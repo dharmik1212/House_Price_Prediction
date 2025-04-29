@@ -1,0 +1,236 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🏡 House Price Predictor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Fullscreen animated background */
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      color: white;
+      position: relative;
+    }
+
+    /* Animation for smooth gradient transition */
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Container for form */
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .loading, .result {
+      margin-top: 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .result {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00ffd5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Particles.js container */
+    #particles-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Particles.js Background -->
+  <div id="particles-js"></div>
+
+  <!-- Main Content Container -->
+  <div class="container">
+    <div class="card shadow-lg text-white">
+      <h2 class="text-center mb-4">🏠 Predict House Price</h2>
+      <form id="predict-form">
+        <div class="row g-3">
+          <div class="col-12">
+            <label>Area (sq.ft)</label>
+            <input type="number" class="form-control" name="area" required>
+          </div>
+          <div class="col-md-6">
+            <label>Bedrooms</label>
+            <select class="form-select" name="bedrooms" required>
+              <option selected disabled>Select</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Bathrooms</label>
+            <select class="form-select" name="bathrooms" required>
+              <option selected disabled>Select</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Stories</label>
+            <select class="form-select" name="stories" required>
+              <option selected disabled>Select</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Main Road</label>
+            <select class="form-select" name="mainroad" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Guest Room</label>
+            <select class="form-select" name="guestroom" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Basement</label>
+            <select class="form-select" name="basement" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Hot Water Heating</label>
+            <select class="form-select" name="hotwaterheating" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Air Conditioning</label>
+            <select class="form-select" name="airconditioning" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Parking Spaces</label>
+            <select class="form-select" name="parking" required>
+              <option selected disabled>Select</option>
+              <option>0</option><option>1</option><option>2</option><option>3</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label>Preferred Area</label>
+            <select class="form-select" name="prefarea" required>
+              <option value="yes">Yes</option><option value="no">No</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-light w-100 mt-4">Predict Price</button>
+      </form>
+
+      <div class="loading text-center" style="display:none;">
+        <div class="spinner-border text-light" role="status"></div>
+        <p>Predicting...</p>
+      </div>
+
+      <div class="result text-center"></div>
+    </div>
+  </div>
+
+  <!-- Particles.js Script -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5 },
+        size: { value: 3 }
+      },
+      interactivity: {
+        events: {
+          onhover: { enable: true, mode: 'repulse' }
+        }
+      }
+    });
+
+    const form = document.getElementById('predict-form');
+    const loading = document.querySelector('.loading');
+    const resultDiv = document.querySelector('.result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        data[key] = isNaN(value) ? value.toLowerCase() : Number(value);
+      });
+
+      loading.style.display = 'block';
+      resultDiv.innerHTML = '';
+
+      try {
+        const response = await fetch('http://localhost:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        console.log(result);
+
+        if (result.predicted_price !== undefined) {
+          resultDiv.innerHTML = `🏡 Predicted Price: ₹ <strong>${Math.round(result.predicted_price).toLocaleString()}</strong>`;
+        } else if (result.error) {
+          resultDiv.innerHTML = `<span class="text-danger">Error: ${result.error}</span>`;
+        } else {
+          resultDiv.innerHTML = `<span class="text-danger">Unknown error occurred.</span>`;
+        }
+      } catch (err) {
+        console.error(err);
+        resultDiv.innerHTML = `<span class="text-danger">Server Error. Please try again later.</span>`;
+      }
+
+      loading.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
